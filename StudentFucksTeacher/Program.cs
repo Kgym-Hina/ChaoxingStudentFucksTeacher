@@ -36,35 +36,42 @@ namespace StudentFucksTeacher
 
         private static async Task CheckInbox(IWebDriver driver)
         {
-            // Find the h5 element with title '收件箱' and click it
-            driver.Navigate().GoToUrl("https://notice.chaoxing.com/res/pc/mobileHtml/html/inbox.html");
+            // 搜索应用中心
+            driver.Navigate().GoToUrl("https://i.chaoxing.com/base/app?s=f08311a89d09fe39402171878faf40f0&fid=356&tid=44646");
 
             var found = false;
             while (!found)
             {
-                var surveyElements = driver.FindElements(By.XPath("//h3[text()='评价问卷']"));
-                found = surveyElements.Count > 0;
+                var surveyApplication = driver.FindElements(By.Id("inputAppName"));
+                found = surveyApplication.Count > 0;
                 await Task.Delay(1000);
-                await Console.Out.WriteLineAsync("Still finding inbox...");
+                await Console.Out.WriteLineAsync("Still finding app...");
             }
             
             // Find the first survey element and click it
-            var surveyElement = driver.FindElement(By.XPath("//h3[text()='评价问卷']"));
+            var surveyElement = driver.FindElement(By.Id("inputAppName"));
             
             surveyElement.Click();
+            surveyElement.SendKeys("评价问卷");
+
+            driver.FindElement(By.ClassName("search-btn")).Click();
             
-            // Find url
+            await Task.Delay(500);
+            
+            // 点击问卷按钮
             found = false;
             while (!found)
             {
-                var surveyElements = driver.FindElements(By.ClassName("attachItem"));
-                found = surveyElements.Count > 0;
+                var surveyApplication = driver.FindElements(By.XPath("/html/body/div/div/div/div[2]/div[8]/ul/li[2]"));
+                found = surveyApplication.Count > 0;
                 await Task.Delay(1000);
-                await Console.Out.WriteLineAsync("Still finding link...");
+                await Console.Out.WriteLineAsync("Still finding app...");
             }
             
             // Find the first survey element and click it
-            surveyElement = driver.FindElement(By.ClassName("attachItem"));
+            var buttonElement = driver.FindElement(By.XPath("/html/body/div/div/div/div[2]/div[8]/ul/li[2]"));
+            
+            buttonElement.Click();
             
             // 在点击之前，获取当前窗口的句柄
             var currentWindowHandle = driver.CurrentWindowHandle;
@@ -91,7 +98,7 @@ namespace StudentFucksTeacher
 
         private static async Task ChooseCourse(IWebDriver driver)
         {
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
             IWebElement surveyElement = wait.Until(driver =>
             {
                 var elements = driver.FindElements(By.XPath("//a[text()='待评价']"));
@@ -129,6 +136,8 @@ namespace StudentFucksTeacher
                 foreach (var radioButton in radioButtons)
                 {
                     var parent = radioButton.FindElement(By.XPath("..")); // Find the parent element
+
+                    
                     if (parent.Text.Contains("5")) // Check if the parent's text contains "5"
                     {
                         radioButton.Click(); // Click the radio button if the condition is met
