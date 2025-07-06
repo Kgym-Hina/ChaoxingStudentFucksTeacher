@@ -5,6 +5,7 @@ using OpenQA.Selenium.Support.UI;
 
 namespace StudentFucksTeacher
 {
+    // 测试
     internal static class Program
     {
         private static async Task Main()
